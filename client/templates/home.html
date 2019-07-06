@@ -1,0 +1,191 @@
+<!DOCTYPE html>
+<html>
+<script type="text/javascript">
+  function sliderChange(val){
+      document.getElementById("sliderStatus").innerHTML = val;
+  }
+</script>
+<!-- Optional JavaScript -->
+<!-- jQuery first, then Popper.js, then Bootstrap JS -->
+<script src="{{ url_for('static', filename='js/jquery.min.js') }}"></script>
+<script src="{{ url_for('static', filename='js/jquery-ui.js') }}"></script>
+<script src="{{ url_for('static', filename='js/jquery-ui.min.js') }}"></script>
+<script src="{{ url_for('static', filename='js/bootstrap.js') }}"></script>
+<script src="{{ url_for('static', filename='js/bootstrap.min.js') }}"></script>
+<script src="{{ url_for('static', filename='js/bootstrap.bundle.js') }}"></script>
+<head>
+  <title>Gamantaray - Autonomous Control Panel</title>
+  <!-- Bootstrap CSS -->
+  <link rel="stylesheet" href="{{ url_for('static', filename='css/bootstrap.css') }}">
+  <link rel="stylesheet" href="{{ url_for('static', filename='css/bootstrap.min.css') }}">
+  <link rel="stylesheet" href="{{ url_for('static', filename='css/bootstrap-grid.css') }}">
+  <link rel="stylesheet" href="{{ url_for('static', filename='css/jquery-ui.css') }}">
+  <link rel="stylesheet" href="{{ url_for('static', filename='css/jquery-ui.min.css') }}">
+  <link rel="stylesheet" href="{{ url_for('static', filename='css/jquery-ui.structure.css') }}">
+  <link rel="stylesheet" href="{{ url_for('static', filename='css/jquery-ui.structure.min.css') }}">
+  <link rel="stylesheet" href="{{ url_for('static', filename='css/jquery-ui.theme.css') }}">
+  <link rel="stylesheet" href="{{ url_for('static', filename='css/jquery-ui.theme.min.css') }}">
+</head>
+
+<style>
+  #hcustom-handle {
+    width: 3em;
+    height: 1.6em;
+    top: 50%;
+    margin-top: -.8em;
+    text-align: center;
+    line-height: 1.6em;
+  }
+  #scustom-handle {
+    width: 3em;
+    height: 1.6em;
+    top: 50%;
+    margin-top: -.8em;
+    text-align: center;
+    line-height: 1.6em;
+  }
+  #vcustom-handle {
+    width: 3em;
+    height: 1.6em;
+    top: 50%;
+    margin-top: -.8em;
+    text-align: center;
+    line-height: 1.6em;
+  }
+  </style>
+
+
+<body>
+  <br></br>
+  <h2 align="center"><img id="logo" src="{{ url_for('static', filename='images/logo.jpg') }}" height="60" width="60">   Gamantaray - Autonomous Control Panel</h2>
+  <br></br>
+
+  <div class="container">
+    <div class="row" align="center">
+      <div class="w-25 p-3" style="width: 50px; background-color: rgba(0,0,255,.1)">
+        <div class="row">
+          <div class="col-sm"><h3>Command</h3></div>
+        </div>
+        <div >
+          <input type="text" name="comm" class="form-control">
+          <button id="but_send" class="btn btn-success">Send</button>
+          <textarea class="form-control" rows="5" id="history"></textarea>
+        </div>
+      </div>
+
+      <div class="w-50 p-3" style="width: 50px; background-color: rgba(0,0,255,.1)">
+        <div class="row">
+          <div class="col-sm"><h3>Video</h3></div>
+        </div>
+        <div >
+          <img id="video" src="{{ url_for('video_viewer') }}"  height="360" width="480">
+        </div>
+      </div>
+
+      <div class="w-25 p-3" style="width: 50px; background-color: rgba(0,0,255,.1)">
+        <div class="row">
+          <div class="col-sm"><h3>Color Calibration</h3></div>
+        </div>
+          <div class = "dropdown">
+            <button class="btn btn-primary dropdown-toggle" type="button" data-toggle="dropdown">Color
+            </button>
+            <div class="dropdown-menu">
+                <a class="dropdown-item" href="#">Red</a>
+                <a class="dropdown-item" href="#">Yellow</a>
+                <a class="dropdown-item" href="#">Blue</a>
+                <a class="dropdown-item" href="#">Green</a>
+            </div>
+          </div>
+          <div class = "dropdown">
+            <button class="btn btn-primary dropdown-toggle" type="button" data-toggle="dropdown">Side
+            </button>
+            <div class="dropdown-menu">
+                <a class="dropdown-item" href="#">Upper</a>
+                <a class="dropdown-item" href="#">Lower</a>
+            </div>
+          </div>
+          <br>
+          <div id="hcustom-handle" class="ui-slider-handle"></div>
+          <br>
+          <div id="hSlider"></div>
+          <br>
+          <div id="scustom-handle" class="ui-slider-handle"></div>
+          <br>
+          <div id="sSlider"></div>
+          <br>
+          <div id="vcustom-handle" class="ui-slider-handle"></div>
+          <br>
+          <div id="vSlider"></div>
+          <br>
+          <div>
+            <h3>PID</h3>
+            <input type="text" class="form-control" placeholder="KP" name="KP"/>
+            <input type="text" class="form-control" placeholder="KI" name="KI"/>
+            <input type="text" class="form-control" placeholder="KD" name="KD"/>
+            <button id="but_set" class="btn btn-success">Set</button>
+      </div>
+    </div>
+  </div>
+
+
+
+  <script type="text/javascript">
+  var psconsole = $('#history');
+  $(function() {
+    $SCRIPT_ROOT = {{ request.script_root|tojson|safe }};
+    $('#but_send').bind('click', function() {
+      sending_data($('input[name="comm"]').val())
+    });
+
+    function sending_data($data){
+      $.getJSON($SCRIPT_ROOT + '/command', {
+        a: $data
+      }, function(data) {
+        $("#history").append(data.history+"\n");
+        if(psconsole.length)
+          psconsole.scrollTop(psconsole[0].scrollHeight - psconsole.height());
+      });
+    }
+
+    var hhandle = $( "#hcustom-handle" );
+    var shandle = $( "#scustom-handle" );
+    var vhandle = $( "#vcustom-handle" );
+    $( "#hSlider" ).slider({
+      min: 0,
+      max: 255,
+      create: function() {
+        hhandle.text( $( this ).slider( "value" ) );
+      },
+      slide: function( event, ui ) {
+        hhandle.text("Hue : "+ ui.value );
+        sending_data(ui.value);
+      }
+    });
+    $( "#sSlider" ).slider({
+      min: 0,
+      max: 255,
+      create: function() {
+        shandle.text( $( this ).slider( "value" ) );
+      },
+      slide: function( event, ui ) {
+        shandle.text("Saturation : "+ui.value );
+        sending_data(ui.value);
+      }
+    });
+    $( "#vSlider" ).slider({
+      min: 0,
+      max: 255,
+      create: function() {
+        vhandle.text( $( this ).slider( "value" ) );
+      },
+      slide: function( event, ui ) {
+        vhandle.text("Value : " + ui.value );
+        sending_data(ui.value);
+      }
+    });
+
+  });
+  </script>
+
+</body>
+</html>

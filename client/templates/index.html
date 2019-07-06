@@ -1,0 +1,39 @@
+<!DOCTYPE html>
+<html>
+<script type="text/javascript">
+  function sliderChange(val){
+      document.getElementById("sliderStatus").innerHTML = val;
+  }
+</script>
+<!-- Optional JavaScript -->
+<!-- jQuery first, then Popper.js, then Bootstrap JS -->
+<script src="{{ url_for('static', filename='js/bootstrap.js') }}"></script>
+<script src="{{ url_for('static', filename='js/bootstrap.min.js') }}"></script>
+<script src="{{ url_for('static', filename='js/bootstrap.bundle.js') }}"></script>
+<script src="{{ url_for('static', filename='js/react.min.js') }}"></script>
+<script src="{{ url_for('static', filename='js/react-dom.min.js') }}"></script>
+<script src="{{ url_for('static', filename='js/JSXTransformer.js') }}"></script>
+<head>
+  <title>Gamantaray - Autonomous Control Panel</title>
+  <!-- Bootstrap CSS -->
+  <link rel="stylesheet" href="{{ url_for('static', filename='css/bootstrap.css') }}">
+  <link rel="stylesheet" href="{{ url_for('static', filename='css/bootstrap.min.css') }}">
+  <link rel="stylesheet" href="{{ url_for('static', filename='css/bootstrap-grid.css') }}">
+</head>
+
+
+<body>
+
+  <div class="container">
+    <div class="w-25 p-3" align="center" style="width: 75px; background-color: rgba(0,0,255,.1)">
+      <h2>Login to Server</h2>
+        <form method="post" action="{{ url_for('index') }}">
+          <input type="text" placeholder="IP" name="ip" class="form-control">
+          <input type="text" placeholder="Port" name="port" class="form-control">
+          <button id="button_login" class="btn btn-success">Login</button>
+        </form>
+    </div>
+  </div>
+
+</body>
+</html>
